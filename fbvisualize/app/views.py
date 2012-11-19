@@ -47,7 +47,7 @@ def _get_mutual(client, friend_id, access_token):
 
 	endpoint = settings.FB_RETRIEVE_ID_URL + '/mutualfriends/%s?access_token=%s' % (friend_id, access_token)
 
-	print endpoint
+	#print endpoint
 	
 	flag = True
 
@@ -57,7 +57,7 @@ def _get_mutual(client, friend_id, access_token):
 
 	content, endpoint = _retrieve_content(endpoint, client)
 
-	mutualfriends = { friend['id'] : friend['name'] for friend in content['data'] }
+	mutualfriends = [ friend['id']  for friend in content['data'] ]
 
 	return mutualfriends
 
@@ -93,6 +93,8 @@ def process(request):
 		mutualfriends[friend_id] = _get_mutual(client, friend_id, request.session['fb_access_token'])
 
 
+	print friends
+	print
 	print mutualfriends
 
 
