@@ -42,8 +42,25 @@ def _retrieve_content(endpoint, client):
 
 	return content, endpoint
 
-def _get_mutual(friendId):
+def _get_mutual(client, friend_id, access_token):
+
+
+	endpoint = settings.FB_RETRIEVE_ID_URL + '/mutualfriends/%s?access_token=%s' % (friend_id, access_token)
+
+	print endpoint
 	
+	flag = True
+
+	mutualfriends = []
+
+	
+
+	content, endpoint = _retrieve_content(endpoint, client)
+
+	mutualfriends = { friend['id'] : friend['name'] for friend in content['data'] }
+
+	return mutualfriends
+
 
 def process(request):
 	consumer = oauth.Consumer(key=settings.FB_APPID, \
@@ -55,18 +72,30 @@ def process(request):
 
 	flag = True
 
-	friends = []
+	friends_list = []
 
 	while flag:
-		print endpoint
+		#print endpoint
 		content, endpoint = _retrieve_content(endpoint, client)
 		if not endpoint:
 			flag = False
 		else:
-			friends.extend(content['data'])
+			friends_list.extend(content['data'])
 
-	#print friends
 	#print len(friends)
+
+	friends = { friend['id'] : friend['name'] for friend in friends_list }
+
+	mutualfriends =  {}
+	
+	for friend_id in friends:
+
+		mutualfriends[friend_id] = _get_mutual(client, friend_id, request.session['fb_access_token'])
+
+
+	print mutualfriends
+
+
 
 def callback(request):
 	consumer = oauth.Consumer(key=settings.FB_APPID, \
